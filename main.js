@@ -92,12 +92,12 @@ let STATE = STATES.IDLE,
 // entry point:
 function main(imageUrl) {
   navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: "user" } })
+    .getUserMedia({ video: { facingMode: "user" }, audio: false })
     .then((stream) => {
       var canvasElement = document.getElementById("jeeFaceFilterCanvas");
       var videoElement = document.getElementById("videoElement");
       videoElement.onloadeddata = function () {
-        window.sendConsolelog('loaded camera');
+        window.sendConsolelog("loaded camera");
 
         STATE = STATES.LOADING;
 
