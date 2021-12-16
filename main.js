@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
 const SETTINGS = {
-  artPainting: '', // initial art painting
+  artPainting: "", // initial art painting
   detectState: null, //{x:-0.09803,y:0.44314,s:0.18782,ry:-0.04926}, // detect state in the initial art painting to avoid search step
 
   nDetectsArtPainting: 25, // number of positive detections to perfectly locate the face in the art painting
@@ -92,36 +92,39 @@ let STATE = STATES.IDLE,
 // entry point:
 function main(imageUrl) {
   navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: 'user' } })
+    .getUserMedia({ video: { facingMode: "user" } })
     .then((stream) => {
-      var canvasElement = document.getElementById('jeeFaceFilterCanvas');
-      var videoElement = document.getElementById('videoElement');
-      videoElement.srcObject = stream;
+      var canvasElement = document.getElementById("jeeFaceFilterCanvas");
+      var videoElement = document.getElementById("videoElement");
       videoElement.onloadeddata = function () {
         STATE = STATES.LOADING;
 
-        DOMARTPAINTINGCONTAINER = document.getElementById('artpaintingContainer');
+        DOMARTPAINTINGCONTAINER = document.getElementById(
+          "artpaintingContainer"
+        );
         ARTPAINTING.image = new Image();
-        ARTPAINTING.image.crossOrigin = 'Anonymous';
+        ARTPAINTING.image.crossOrigin = "Anonymous";
         ARTPAINTING.image.src = imageUrl;
         // ARTPAINTING.image.onload = check_isLoaded.bind(null, 'ARTPAINTING.image');
         ARTPAINTING.image.onload = function () {
-          window.sendConsolelog({ type: 'image' });
-          check_isLoaded('ARTPAINTING.image');
+          window.sendConsolelog({ type: "image" });
+          check_isLoaded("ARTPAINTING.image");
 
           JEELIZFACEFILTER.init({
             canvas: canvasElement,
             videoSettings: {
               videoElement: videoElement,
             },
-            NNCPath: './neuralNets/', // root of NN_DEFAULT.json file
+            NNCPath: "./neuralNets/", // root of NN_DEFAULT.json file
             callbackReady: function (errCode, spec) {
               if (errCode) {
                 window.sendConsolelog({
-                  type: 'error',
-                  data: 'AN ERROR HAPPENS. ERROR CODE =' + errCode,
+                  type: "error",
+                  data: "AN ERROR HAPPENS. ERROR CODE =" + errCode,
                 });
-                window.sendConsolelog('AN ERROR HAPPENS. ERROR CODE =' + errCode);
+                window.sendConsolelog(
+                  "AN ERROR HAPPENS. ERROR CODE =" + errCode
+                );
                 STATE = STATES.ERROR;
                 // main(imageUrl);
                 return;
@@ -129,11 +132,13 @@ function main(imageUrl) {
               FFSPECS = spec;
               GL = spec.GL;
               FBO = GL.createFramebuffer();
-              GLDRAWTARGET = GL.DRAW_FRAMEBUFFER ? GL.DRAW_FRAMEBUFFER : GL.FRAMEBUFFER;
+              GLDRAWTARGET = GL.DRAW_FRAMEBUFFER
+                ? GL.DRAW_FRAMEBUFFER
+                : GL.FRAMEBUFFER;
 
-              window.sendConsolelog({ type: 'init' });
-              window.sendConsolelog('INFO: JEELIZFACEFILTER IS READY');
-              check_isLoaded('JEELIZFACEFILTER');
+              window.sendConsolelog({ type: "init" });
+              window.sendConsolelog("INFO: JEELIZFACEFILTER IS READY");
+              check_isLoaded("JEELIZFACEFILTER");
             }, //end callbackReady()
 
             //called at each render iteration (drawing loop)
@@ -141,22 +146,26 @@ function main(imageUrl) {
           }); //end JEELIZFACEFILTER.init
         };
       };
+      videoElement.srcObject = stream;
+      if (videoElement.paused) {
+        videoElement.play();
+      }
     })
     .catch((err0r) => {
-      window.sendConsolelog('Something went wrong! ' + err0r);
+      window.sendConsolelog("Something went wrong! " + err0r);
     });
 }
 
 function check_isLoaded(label) {
-  window.sendConsolelog('INFO in check_isLoaded(): ' + label + 'is loaded');
+  window.sendConsolelog("INFO in check_isLoaded(): " + label + "is loaded");
   if (++NLOADEDS === 2) {
     start();
   }
 }
 
 function start() {
-  window.sendConsolelog({ type: 'start' });
-  window.sendConsolelog('INFO: start()');
+  window.sendConsolelog({ type: "start" });
+  window.sendConsolelog("INFO: start()");
 
   create_textures();
   build_shps();
@@ -177,7 +186,14 @@ function update_artPainting(detectState) {
   }
   GL.bindTexture(GL.TEXTURE_2D, ARTPAINTING.baseTexture);
   GL.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, true);
-  GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, ARTPAINTING.image);
+  GL.texImage2D(
+    GL.TEXTURE_2D,
+    0,
+    GL.RGBA,
+    GL.RGBA,
+    GL.UNSIGNED_BYTE,
+    ARTPAINTING.image
+  );
   GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
   GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
   GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
@@ -190,13 +206,13 @@ function update_artPainting(detectState) {
   );
 
   ARTPAINTING.detectCounter = 0;
-  FFSPECS.canvasElement.classList.remove('canvasDetected');
-  FFSPECS.canvasElement.classList.remove('canvasNotDetected');
-  FFSPECS.canvasElement.classList.add('artPainting');
+  FFSPECS.canvasElement.classList.remove("canvasDetected");
+  FFSPECS.canvasElement.classList.remove("canvasNotDetected");
+  FFSPECS.canvasElement.classList.add("artPainting");
 
-  FFSPECS.canvasElement.style.top = '';
-  FFSPECS.canvasElement.style.left = '';
-  FFSPECS.canvasElement.style.width = '';
+  FFSPECS.canvasElement.style.top = "";
+  FFSPECS.canvasElement.style.left = "";
+  FFSPECS.canvasElement.style.width = "";
 
   if (detectState) {
     STATE = STATES.ARTPAINTINGFACEDETECTPROVIDED;
@@ -214,7 +230,7 @@ function change_artPainting(urlImage, detectState) {
   ) {
     return;
   }
-  if (typeof detectState === 'undefined') {
+  if (typeof detectState === "undefined") {
     detectState = null;
   }
 
@@ -225,24 +241,24 @@ function change_artPainting(urlImage, detectState) {
   }
   ARTPAINTING.image = new Image();
 
-  if (urlImage === 'CUSTOM') {
+  if (urlImage === "CUSTOM") {
     // upload custom image
-    const domInputFile = document.getElementById('customImage');
+    const domInputFile = document.getElementById("customImage");
     if (!domInputFile.files || !domInputFile.files[0]) {
-      window.sendConsolelog('You should select at least one file');
+      window.sendConsolelog("You should select at least one file");
       return;
     }
     const reader = new FileReader();
     reader.onload = function (e) {
-      ARTPAINTING.image.crossOrigin = 'Anonymous';
+      ARTPAINTING.image.crossOrigin = "Anonymous";
 
-      ARTPAINTING.url = 'CUSTOM' + Date.now();
+      ARTPAINTING.url = "CUSTOM" + Date.now();
       ARTPAINTING.image.src = e.target.result;
       ARTPAINTING.image.onload = update_artPainting.bind(null, detectState);
     };
     reader.readAsDataURL(domInputFile.files[0]);
   } else {
-    ARTPAINTING.image.crossOrigin = 'Anonymous';
+    ARTPAINTING.image.crossOrigin = "Anonymous";
     ARTPAINTING.url = urlImage;
     ARTPAINTING.image.src = urlImage;
     ARTPAINTING.image.onload = update_artPainting.bind(null, detectState);
@@ -253,7 +269,17 @@ function create_textures() {
   const create_emptyTexture = function (w, h) {
     const tex = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, tex);
-    GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, w, h, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+    GL.texImage2D(
+      GL.TEXTURE_2D,
+      0,
+      GL.RGBA,
+      w,
+      h,
+      0,
+      GL.RGBA,
+      GL.UNSIGNED_BYTE,
+      null
+    );
     return tex;
   };
 
@@ -266,28 +292,38 @@ function create_textures() {
 
   // create the artpainting and userCrop hue textures:
   const create_hueTexture = function () {
-    return create_emptyLinearTexture(SETTINGS.hueTextureSizePx, SETTINGS.hueTextureSizePx);
+    return create_emptyLinearTexture(
+      SETTINGS.hueTextureSizePx,
+      SETTINGS.hueTextureSizePx
+    );
   };
   ARTPAINTING.hueTexture = create_hueTexture();
   USERCROP.hueTexture = create_hueTexture();
 
   // create the userCrop textures:
-  const faceAspectRatio = SETTINGS.artPaintingMaskScale[1] / SETTINGS.artPaintingMaskScale[0];
+  const faceAspectRatio =
+    SETTINGS.artPaintingMaskScale[1] / SETTINGS.artPaintingMaskScale[0];
   USERCROP.faceCutDims[0] = SETTINGS.faceRenderSizePx;
-  USERCROP.faceCutDims[1] = Math.round(SETTINGS.faceRenderSizePx * faceAspectRatio);
+  USERCROP.faceCutDims[1] = Math.round(
+    SETTINGS.faceRenderSizePx * faceAspectRatio
+  );
 
   USERCROP.potFaceCutTexture = create_emptyTexture(
     SETTINGS.faceRenderSizePx,
     SETTINGS.faceRenderSizePx
   );
   GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-  GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
+  GL.texParameteri(
+    GL.TEXTURE_2D,
+    GL.TEXTURE_MIN_FILTER,
+    GL.LINEAR_MIPMAP_NEAREST
+  );
 } //end create_textures()
 
 function build_artPaintingMask(detectState, callback) {
   // cut the face with webgl and put a fading:
-  window.sendConsolelog({ type: 'ready' });
-  window.sendConsolelog('INFO: build_artPaintingMask()');
+  window.sendConsolelog({ type: "ready" });
+  window.sendConsolelog("INFO: build_artPaintingMask()");
 
   const x = detectState.x,
     y = detectState.y,
@@ -295,11 +331,13 @@ function build_artPaintingMask(detectState, callback) {
     ry = detectState.ry;
 
   // compute normalized frame cut params:
-  const xn = x * 0.5 + 0.5 + s * SETTINGS.artPaintingMaskOffset[0] * Math.sin(ry); // normalized x position
+  const xn =
+    x * 0.5 + 0.5 + s * SETTINGS.artPaintingMaskOffset[0] * Math.sin(ry); // normalized x position
   const yn = y * 0.5 + 0.5 + s * SETTINGS.artPaintingMaskOffset[1];
   const sxn = s * SETTINGS.artPaintingMaskScale[0];
   const syn =
-    (s * SETTINGS.artPaintingMaskScale[1] * ARTPAINTING.image.width) / ARTPAINTING.image.height;
+    (s * SETTINGS.artPaintingMaskScale[1] * ARTPAINTING.image.width) /
+    ARTPAINTING.image.height;
 
   ARTPAINTING.positionFace[0] = xn;
   ARTPAINTING.positionFace[1] = yn;
@@ -323,27 +361,30 @@ function build_artPaintingMask(detectState, callback) {
   GL.disable(GL.BLEND);
 
   // copy the face cuted to a dumb canvas2D which will be displayed in the DOM:
-  const artPaintingMask = document.createElement('canvas');
+  const artPaintingMask = document.createElement("canvas");
   artPaintingMask.width = ARTPAINTING.image.width;
   artPaintingMask.height = ARTPAINTING.image.height;
-  const ctx = artPaintingMask.getContext('2d');
+  const ctx = artPaintingMask.getContext("2d");
   ctx.drawImage(FFSPECS.canvasElement, 0, 0);
 
-  artPaintingMask.classList.add('artPainting');
-  FFSPECS.canvasElement.classList.remove('artPainting');
-  FFSPECS.canvasElement.classList.add('canvasNotDetected');
+  artPaintingMask.classList.add("artPainting");
+  FFSPECS.canvasElement.classList.remove("artPainting");
+  FFSPECS.canvasElement.classList.add("canvasNotDetected");
   ISUSERFACEDETECTED = false;
   ARTPAINTING.canvasMask = artPaintingMask;
   DOMARTPAINTINGCONTAINER.appendChild(artPaintingMask);
   if (SETTINGS.debugArtPaintingPotFaceCutTexture) {
-    artPaintingMask.style.opacity = '0.5';
+    artPaintingMask.style.opacity = "0.5";
   }
 
   // initialize the face cut pot texture:
   const faceWidthPx = Math.round(ARTPAINTING.image.width * sxn);
   const faceHeightPx = Math.round(ARTPAINTING.image.height * syn);
   const maxDimPx = Math.max(faceWidthPx, faceHeightPx);
-  ARTPAINTING.potFaceCutTextureSizePx = Math.pow(2, Math.ceil(Math.log(maxDimPx) / Math.log(2)));
+  ARTPAINTING.potFaceCutTextureSizePx = Math.pow(
+    2,
+    Math.ceil(Math.log(maxDimPx) / Math.log(2))
+  );
   ARTPAINTING.potFaceCutTexture = GL.createTexture();
   GL.bindTexture(GL.TEXTURE_2D, ARTPAINTING.potFaceCutTexture);
   GL.texImage2D(
@@ -358,16 +399,29 @@ function build_artPaintingMask(detectState, callback) {
     null
   );
   GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-  GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
+  GL.texParameteri(
+    GL.TEXTURE_2D,
+    GL.TEXTURE_MIN_FILTER,
+    GL.LINEAR_MIPMAP_NEAREST
+  );
 
   // compute the face cut pot texture by doing render to texture:
   GL.useProgram(SHPS.cropUserFace.program);
   GL.uniform2f(SHPS.cropUserFace.offset, xn, yn);
   GL.uniform2f(SHPS.cropUserFace.scale, sxn, syn);
-  GL.uniformMatrix2fv(SHPS.cropUserFace.videoTransformMat2, false, [0.5, 0, 0, 0.5]);
+  GL.uniformMatrix2fv(
+    SHPS.cropUserFace.videoTransformMat2,
+    false,
+    [0.5, 0, 0, 0.5]
+  );
   GL.bindFramebuffer(GLDRAWTARGET, FBO);
   GL.bindTexture(GL.TEXTURE_2D, ARTPAINTING.baseTexture);
-  GL.viewport(0, 0, ARTPAINTING.potFaceCutTextureSizePx, ARTPAINTING.potFaceCutTextureSizePx);
+  GL.viewport(
+    0,
+    0,
+    ARTPAINTING.potFaceCutTextureSizePx,
+    ARTPAINTING.potFaceCutTextureSizePx
+  );
   GL.framebufferTexture2D(
     GL.FRAMEBUFFER,
     GL.COLOR_ATTACHMENT0,
@@ -397,26 +451,26 @@ function build_artPaintingMask(detectState, callback) {
 
 function build_shps() {
   const copyVertexShaderSource =
-    'attribute vec2 position;\n\
+    "attribute vec2 position;\n\
     varying vec2 vUV;\n\
     void main(void){\n\
       gl_Position = vec4(position, 0., 1.);\n\
       vUV = 0.5 + 0.5 * position;\n\
-    }';
+    }";
 
   const copyFragmentShaderSource =
-    'precision lowp float;\n\
+    "precision lowp float;\n\
     uniform sampler2D samplerImage;\n\
     varying vec2 vUV;\n\
     \n\
     void main(void){\n\
       gl_FragColor = texture2D(samplerImage, vUV);\n\
-    }';
+    }";
 
   // build the search SHP:
   const shpSearch = build_shaderProgram(
     copyVertexShaderSource,
-    'precision lowp float;\n\
+    "precision lowp float;\n\
       varying vec2 vUV;\n\
       uniform mat2 videoTransformMat2;\n\
       uniform sampler2D samplerVideo;\n\
@@ -432,25 +486,25 @@ function build_shps() {
         float alpha = isInside.x*isInside.y*pow(max(blendCenterFactor.x, blendCenterFactor.y), 3.);\n\
         vec3 color = mix(colorVideo, vec3(0.,0.6,1.), alpha);\n\
         gl_FragColor = vec4(color,1.);\n\
-      }',
-    'SEARCH FACE'
+      }",
+    "SEARCH FACE"
   );
   SHPS.search = {
     program: shpSearch,
-    samplerVideo: GL.getUniformLocation(shpSearch, 'samplerVideo'),
-    videoTransformMat2: GL.getUniformLocation(shpSearch, 'videoTransformMat2'),
-    uxysw: GL.getUniformLocation(shpSearch, 'uxysw'),
+    samplerVideo: GL.getUniformLocation(shpSearch, "samplerVideo"),
+    videoTransformMat2: GL.getUniformLocation(shpSearch, "videoTransformMat2"),
+    uxysw: GL.getUniformLocation(shpSearch, "uxysw"),
   };
   GL.useProgram(shpSearch);
   GL.uniform1i(SHPS.search.samplerVideo, 0);
 
   // ARTPAINTING SHPS:
   const set_apShp = function (shp, isTransformMat) {
-    const uSamplerImage = GL.getUniformLocation(shp, 'samplerImage');
-    const uScale = GL.getUniformLocation(shp, 'scale');
-    const uOffset = GL.getUniformLocation(shp, 'offset');
+    const uSamplerImage = GL.getUniformLocation(shp, "samplerImage");
+    const uScale = GL.getUniformLocation(shp, "scale");
+    const uOffset = GL.getUniformLocation(shp, "offset");
     const uVideoTransformMat2 = isTransformMat
-      ? GL.getUniformLocation(shp, 'videoTransformMat2')
+      ? GL.getUniformLocation(shp, "videoTransformMat2")
       : null;
 
     GL.useProgram(shp);
@@ -465,7 +519,7 @@ function build_shps() {
   };
 
   let alphaShaderChunk =
-    'float alpha = 0.;\n\
+    "float alpha = 0.;\n\
       vec2 uv = (vUV-offset+s2)/(2.*s2); //uv normalized in the face\n\
       if (uv.y>UPPERHEADY){ // upper head: circle arc\n\
         vec2 uvc = (uv-vec2(0.5,UPPERHEADY))*vec2(1., 0.5/(1.-UPPERHEADY));\n\
@@ -478,30 +532,30 @@ function build_shps() {
       } else { // middle head: straight\n\
         vec2 uvc = vec2(uv.x-0.5, 0.);\n\
         alpha = smoothstep(0.5-SMOOTHEDGE, 0.5,length(uvc));\n\
-      }\n';
+      }\n";
   alphaShaderChunk +=
-    'float grayScale = dot(color, vec3(0.33,0.33,0.33));\n\
+    "float grayScale = dot(color, vec3(0.33,0.33,0.33));\n\
           if (alpha>0.01){\n\
             alpha = mix(pow(alpha, 0.5), pow(alpha, 1.5), smoothstep(0.1,0.5,grayScale));\n\
-          }';
+          }";
 
   const shpBuildMask = build_shaderProgram(
     copyVertexShaderSource,
 
-    'precision highp float;\n\
+    "precision highp float;\n\
      uniform vec2 offset, scale;\n\
      uniform sampler2D samplerImage;\n\
      varying vec2 vUV;\n\
      \n\
-     const float UPPERHEADY =' +
+     const float UPPERHEADY =" +
       SETTINGS.artPaintingHeadForheadY.toFixed(2) +
-      ';\n\
-     const float LOWERHEADY =' +
+      ";\n\
+     const float LOWERHEADY =" +
       SETTINGS.artPaintingHeadJawY.toFixed(2) +
-      ';\n\
-     const float SMOOTHEDGE =' +
+      ";\n\
+     const float SMOOTHEDGE =" +
       SETTINGS.artPaintingCropSmoothEdge.toFixed(2) +
-      ';\n\
+      ";\n\
      \n\
      \n\
      void main(void){\n\
@@ -512,30 +566,32 @@ function build_shps() {
          gl_FragColor = texture2D(samplerImage, vUV); return;\n\
        }\n\
        vec3 color = texture2D(samplerImage, vUV).rgb;\n\
-       ' +
+       " +
       alphaShaderChunk +
-      '\
+      "\
        gl_FragColor = vec4(color, alpha);\n\
-       ' +
-      (SETTINGS.debugArtpaintingCrop ? 'gl_FragColor = vec4(1.,0.,0.,1.);' : '') +
-      '\n\
-     }',
+       " +
+      (SETTINGS.debugArtpaintingCrop
+        ? "gl_FragColor = vec4(1.,0.,0.,1.);"
+        : "") +
+      "\n\
+     }",
 
-    'BUILD ARTPAINTING MASK'
+    "BUILD ARTPAINTING MASK"
   );
   SHPS.buildMask = set_apShp(shpBuildMask, false);
 
   // this SHP is only used to crop the face to compute the hueTexture:
   const shpCutFace = build_shaderProgram(
-    'attribute vec2 position;\n\
+    "attribute vec2 position;\n\
      uniform vec2 offset, scale;\n\
      varying vec2 vUV;\n\
      void main(void){\n\
       gl_Position = vec4(position, 0., 1.);\n\
       vUV = offset + 0.5 * position * scale;\n\
-     }',
+     }",
 
-    'precision lowp float;\n\
+    "precision lowp float;\n\
      uniform sampler2D samplerImage;\n\
      uniform mat2 videoTransformMat2;\n\
      varying vec2 vUV;\n\
@@ -550,40 +606,44 @@ function build_shps() {
        uvCentered = mix(uvCentered, uvBorder, isOutside);\n\
        vec2 uvVideoCentered = videoTransformMat2 * uvCentered;\n\
        gl_FragColor = texture2D(samplerImage, 0.5 + uvVideoCentered);\n\
-     }',
-    'CUT ARTPAINTING FACE'
+     }",
+    "CUT ARTPAINTING FACE"
   );
   SHPS.cropUserFace = set_apShp(shpCutFace, true);
 
   // build the copy shader program:
-  const shpCopy = build_shaderProgram(copyVertexShaderSource, copyFragmentShaderSource, 'COPY');
+  const shpCopy = build_shaderProgram(
+    copyVertexShaderSource,
+    copyFragmentShaderSource,
+    "COPY"
+  );
   SHPS.copy = {
     program: shpCopy,
   };
-  let uSamplerImage = GL.getUniformLocation(shpCopy, 'samplerImage');
+  let uSamplerImage = GL.getUniformLocation(shpCopy, "samplerImage");
   GL.useProgram(shpCopy);
   GL.uniform1i(uSamplerImage, 0);
 
   // build the copyInvX shader program:
   const shpCopyInvX = build_shaderProgram(
     copyVertexShaderSource.replace(
-      'vUV = 0.5 + 0.5 * position',
-      'vUV = 0.5 + vec2(-0.5,0.5)*position'
+      "vUV = 0.5 + 0.5 * position",
+      "vUV = 0.5 + vec2(-0.5,0.5)*position"
     ),
     copyFragmentShaderSource,
-    'COPYINVX'
+    "COPYINVX"
   );
   SHPS.copyInvX = {
     program: shpCopyInvX,
   };
-  uSamplerImage = GL.getUniformLocation(shpCopyInvX, 'samplerImage');
+  uSamplerImage = GL.getUniformLocation(shpCopyInvX, "samplerImage");
   GL.useProgram(shpCopyInvX);
   GL.uniform1i(uSamplerImage, 0);
 
   // final render shp:
   const shpRender = build_shaderProgram(
     copyVertexShaderSource,
-    'precision highp float;\n\
+    "precision highp float;\n\
      uniform sampler2D samplerImage, samplerHueSrc, samplerHueDst;\n\
      uniform mat2 videoTransformMat2;\n\
      uniform vec2 offset, scale;\n\
@@ -628,18 +688,18 @@ function build_shps() {
        // reconvert to RGB and output the color:\n\
        colorRGB = hsv2rgb(colorHSVout);\n\
        gl_FragColor = vec4(colorRGB, 1.);\n\
-     }',
-    'FINAL RENDER FACE'
+     }",
+    "FINAL RENDER FACE"
   );
   SHPS.render = {
     program: shpRender,
-    scale: GL.getUniformLocation(shpRender, 'scale'),
-    offset: GL.getUniformLocation(shpRender, 'offset'),
-    videoTransformMat2: GL.getUniformLocation(shpRender, 'videoTransformMat2'),
+    scale: GL.getUniformLocation(shpRender, "scale"),
+    offset: GL.getUniformLocation(shpRender, "offset"),
+    videoTransformMat2: GL.getUniformLocation(shpRender, "videoTransformMat2"),
   };
-  uSamplerImage = GL.getUniformLocation(shpRender, 'samplerImage');
-  const uSamplerHueSrc = GL.getUniformLocation(shpRender, 'samplerHueSrc');
-  const uSamplerHueDst = GL.getUniformLocation(shpRender, 'samplerHueDst');
+  uSamplerImage = GL.getUniformLocation(shpRender, "samplerImage");
+  const uSamplerHueSrc = GL.getUniformLocation(shpRender, "samplerHueSrc");
+  const uSamplerHueDst = GL.getUniformLocation(shpRender, "samplerHueDst");
   GL.useProgram(shpRender);
   GL.uniform1i(uSamplerImage, 0);
   GL.uniform1i(uSamplerHueSrc, 2);
@@ -648,7 +708,7 @@ function build_shps() {
 
 function reset_toVideo() {
   position_userCropCanvas();
-  window.addEventListener('resize', position_userCropCanvas, false);
+  window.addEventListener("resize", position_userCropCanvas, false);
 
   FFSPECS.canvasElement.width = SETTINGS.videoDetectSizePx;
   FFSPECS.canvasElement.height = SETTINGS.videoDetectSizePx;
@@ -664,8 +724,10 @@ function compile_shader(source, glType, typeString) {
   GL.shaderSource(glShader, source);
   GL.compileShader(glShader);
   if (!GL.getShaderParameter(glShader, GL.COMPILE_STATUS)) {
-    window.sendConsolelog('ERROR IN ' + typeString + ' SHADER: ' + GL.getShaderInfoLog(glShader));
-    window.sendConsolelog('Buggy shader source: \n' + source);
+    window.sendConsolelog(
+      "ERROR IN " + typeString + " SHADER: " + GL.getShaderInfoLog(glShader)
+    );
+    window.sendConsolelog("Buggy shader source: \n" + source);
     return null;
   }
   return glShader;
@@ -674,11 +736,15 @@ function compile_shader(source, glType, typeString) {
 // helper function to build the shader program:
 function build_shaderProgram(shaderVertexSource, shaderFragmentSource, id) {
   // compile both shader separately:
-  const glShaderVertex = compile_shader(shaderVertexSource, GL.VERTEX_SHADER, 'VERTEX ' + id);
+  const glShaderVertex = compile_shader(
+    shaderVertexSource,
+    GL.VERTEX_SHADER,
+    "VERTEX " + id
+  );
   const glShaderFragment = compile_shader(
     shaderFragmentSource,
     GL.FRAGMENT_SHADER,
-    'FRAGMENT ' + id
+    "FRAGMENT " + id
   );
 
   const glShaderProgram = GL.createProgram();
@@ -687,23 +753,24 @@ function build_shaderProgram(shaderVertexSource, shaderFragmentSource, id) {
 
   // start the linking stage:
   GL.linkProgram(glShaderProgram);
-  const aPos = GL.getAttribLocation(glShaderProgram, 'position');
+  const aPos = GL.getAttribLocation(glShaderProgram, "position");
   GL.enableVertexAttribArray(aPos);
 
   return glShaderProgram;
 }
 
 function position_userCropCanvas() {
-  window.sendConsolelog('INFO: position_userCropCanvas()');
+  window.sendConsolelog("INFO: position_userCropCanvas()");
   const restoredPosition = FFSPECS.canvasElement.style.position;
-  FFSPECS.canvasElement.style.position = 'absolute';
+  FFSPECS.canvasElement.style.position = "absolute";
 
   // compute topPx an leftPx in the artpainting canvas image ref:
   let topPx = ARTPAINTING.image.height * ARTPAINTING.positionFace[1];
   let leftPx = ARTPAINTING.image.width * ARTPAINTING.positionFace[0];
   let widthFacePx = ARTPAINTING.image.width * ARTPAINTING.scaleFace[0];
   let heightFacePx = ARTPAINTING.image.height * ARTPAINTING.scaleFace[1];
-  let widthPx = (widthFacePx * SETTINGS.videoDetectSizePx) / SETTINGS.faceRenderSizePx; //the whole canvas is bigger than the user face rendering
+  let widthPx =
+    (widthFacePx * SETTINGS.videoDetectSizePx) / SETTINGS.faceRenderSizePx; //the whole canvas is bigger than the user face rendering
   topPx = ARTPAINTING.image.height - topPx; //Y axis is inverted between WebGL viewport and CSS
 
   //t ake account of the CSS scale factor of the art painting:
@@ -719,9 +786,9 @@ function position_userCropCanvas() {
   topPx -= heightFacePx / 2;
   leftPx -= widthFacePx / 2;
 
-  FFSPECS.canvasElement.style.top = Math.round(topPx).toString() + 'px';
-  FFSPECS.canvasElement.style.left = Math.round(leftPx).toString() + 'px';
-  FFSPECS.canvasElement.style.width = Math.round(widthPx).toString() + 'px';
+  FFSPECS.canvasElement.style.top = Math.round(topPx).toString() + "px";
+  FFSPECS.canvasElement.style.left = Math.round(leftPx).toString() + "px";
+  FFSPECS.canvasElement.style.width = Math.round(widthPx).toString() + "px";
 
   FFSPECS.canvasElement.style.position = restoredPosition;
 } //end position_userCropCanvas()
@@ -737,7 +804,11 @@ function draw_search(detectState) {
     detectState.s,
     (detectState.s * FFSPECS.canvasElement.width) / FFSPECS.canvasElement.height
   );
-  GL.uniformMatrix2fv(SHPS.search.videoTransformMat2, false, FFSPECS.videoTransformMat2);
+  GL.uniformMatrix2fv(
+    SHPS.search.videoTransformMat2,
+    false,
+    FFSPECS.videoTransformMat2
+  );
   GL.activeTexture(GL.TEXTURE0);
   GL.bindTexture(GL.TEXTURE_2D, FFSPECS.videoTexture);
   GL.drawElements(GL.TRIANGLES, 3, GL.UNSIGNED_SHORT, 0);
@@ -751,7 +822,9 @@ function draw_render(detectState) {
   // crop the user's face and put the result to USERCROP.potFaceCutTexture:
   const s = detectState.s / SETTINGS.zoomFactor;
   const xn =
-    detectState.x * 0.5 + 0.5 + s * SETTINGS.artPaintingMaskOffset[0] * Math.sin(detectState.ry); // normalized x position
+    detectState.x * 0.5 +
+    0.5 +
+    s * SETTINGS.artPaintingMaskOffset[0] * Math.sin(detectState.ry); // normalized x position
   const yn = detectState.y * 0.5 + 0.5 + s * SETTINGS.artPaintingMaskOffset[1];
   const sxn = s * SETTINGS.artPaintingMaskScale[0];
   const syn = s * SETTINGS.artPaintingMaskScale[1];
@@ -766,7 +839,11 @@ function draw_render(detectState) {
   );
   GL.uniform2f(SHPS.cropUserFace.offset, xn, yn);
   GL.uniform2f(SHPS.cropUserFace.scale, sxn, syn);
-  GL.uniformMatrix2fv(SHPS.cropUserFace.videoTransformMat2, false, FFSPECS.videoTransformMat2);
+  GL.uniformMatrix2fv(
+    SHPS.cropUserFace.videoTransformMat2,
+    false,
+    FFSPECS.videoTransformMat2
+  );
   GL.viewport(0, 0, SETTINGS.faceRenderSizePx, SETTINGS.faceRenderSizePx);
   GL.bindTexture(GL.TEXTURE_2D, FFSPECS.videoTexture);
   GL.drawElements(GL.TRIANGLES, 3, GL.UNSIGNED_SHORT, 0);
@@ -790,7 +867,11 @@ function draw_render(detectState) {
   GL.useProgram(SHPS.render.program);
   GL.uniform2f(SHPS.render.offset, xn, yn);
   GL.uniform2f(SHPS.render.scale, sxn, syn);
-  GL.uniformMatrix2fv(SHPS.render.videoTransformMat2, false, FFSPECS.videoTransformMat2);
+  GL.uniformMatrix2fv(
+    SHPS.render.videoTransformMat2,
+    false,
+    FFSPECS.videoTransformMat2
+  );
   GL.bindTexture(GL.TEXTURE_2D, FFSPECS.videoTexture);
   GL.activeTexture(GL.TEXTURE1);
   GL.bindTexture(GL.TEXTURE_2D, ARTPAINTING.hueTexture);
@@ -823,13 +904,13 @@ function callbackTrack(detectState) {
             return Math.round(n * 1e5) / 1e5;
           };
           window.sendConsolelog(
-            'FACE DETECTED IN THE BASE PICTURE. detectState = ' +
+            "FACE DETECTED IN THE BASE PICTURE. detectState = " +
               JSON.stringify({
                 x: round(detectState.x),
                 y: round(detectState.y),
                 s: round(detectState.s),
                 ry: round(detectState.ry),
-              }).replace(/"/g, '')
+              }).replace(/"/g, "")
           );
           STATE = STATES.BUSY;
           build_artPaintingMask(detectState, reset_toVideo);
@@ -848,20 +929,22 @@ function callbackTrack(detectState) {
     case STATES.DETECTUSERFACE:
       if (
         ISUSERFACEDETECTED &&
-        detectState.detected < SETTINGS.detectionThreshold - SETTINGS.detectionHysteresis
+        detectState.detected <
+          SETTINGS.detectionThreshold - SETTINGS.detectionHysteresis
       ) {
         // DETECTION LOST
         ISUSERFACEDETECTED = false;
-        FFSPECS.canvasElement.classList.remove('canvasDetected');
-        FFSPECS.canvasElement.classList.add('canvasNotDetected');
+        FFSPECS.canvasElement.classList.remove("canvasDetected");
+        FFSPECS.canvasElement.classList.add("canvasNotDetected");
       } else if (
         !ISUSERFACEDETECTED &&
-        detectState.detected > SETTINGS.detectionThreshold + SETTINGS.detectionHysteresis
+        detectState.detected >
+          SETTINGS.detectionThreshold + SETTINGS.detectionHysteresis
       ) {
         // FACE DETECTED
         ISUSERFACEDETECTED = true;
-        FFSPECS.canvasElement.classList.remove('canvasNotDetected');
-        FFSPECS.canvasElement.classList.add('canvasDetected');
+        FFSPECS.canvasElement.classList.remove("canvasNotDetected");
+        FFSPECS.canvasElement.classList.add("canvasDetected");
       }
 
       if (ISUSERFACEDETECTED) {
