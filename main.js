@@ -96,7 +96,7 @@ function main(imageUrl) {
     .then((stream) => {
       var canvasElement = document.getElementById("jeeFaceFilterCanvas");
       var videoElement = document.getElementById("videoElement");
-      videoElement.onprogress = function () {
+      videoElement.onloadeddata = function () {
         STATE = STATES.LOADING;
 
         DOMARTPAINTINGCONTAINER = document.getElementById(
