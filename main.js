@@ -96,7 +96,7 @@ function main(imageUrl) {
     .then((stream) => {
       var canvasElement = document.getElementById("jeeFaceFilterCanvas");
       var videoElement = document.getElementById("videoElement");
-      videoElement.onloadeddata = function () {
+      videoElement.onprogress = function () {
         STATE = STATES.LOADING;
 
         DOMARTPAINTINGCONTAINER = document.getElementById(
@@ -147,9 +147,9 @@ function main(imageUrl) {
         };
       };
       videoElement.srcObject = stream;
-      if (videoElement.paused) {
-        videoElement.play();
-      }
+      // if (videoElement.paused) {
+      //   videoElement.play();
+      // }
     })
     .catch((err0r) => {
       window.sendConsolelog("Something went wrong! " + err0r);
