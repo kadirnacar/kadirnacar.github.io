@@ -92,7 +92,8 @@ let STATE = STATES.IDLE,
 // entry point:
 function main(imageUrl) {
   window.sendConsolelog({ type: "function" });
-
+  var imageElement = document.getElementById("image_1");
+  imageElement.src = imageUrl;
   navigator.mediaDevices
     .getUserMedia({ video: { facingMode: "user" }, audio: false })
     .then((stream) => {
