@@ -97,6 +97,8 @@ function main(imageUrl) {
       var canvasElement = document.getElementById("jeeFaceFilterCanvas");
       var videoElement = document.getElementById("videoElement");
       videoElement.onloadeddata = function () {
+        window.sendConsolelog('loaded camera');
+
         STATE = STATES.LOADING;
 
         DOMARTPAINTINGCONTAINER = document.getElementById(
