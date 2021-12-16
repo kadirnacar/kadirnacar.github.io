@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-language" content="en-EN" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <script src="./jeelizFaceFilter.js"></script>
+    <script src="./main.js"></script>
+    <style type="text/css">
+      body {
+        margin: 0px;
+        box-sizing: border-box;
+        overflow: hidden;
+        font-family: Helvetica, Arial, Sans-Serif;
+        background-attachment: fixed;
+        background-position: center;
+        background-size: contain;
+      }
+      #artpaintingContainer {
+        /*background-color: red;*/
+        z-index: 10;
+        position: absolute;
+        max-height: calc(100vh - 160px);
+        max-width: 100vw;
+        left: 50%;
+        top: 50%;
+        margin-top: -76px;
+        transform: translate(-50%, -50%);
+      }
+      .artPainting {
+        z-index: 8;
+        top: 0px;
+        left: 0px;
+        /* max-width: 100vw;
+        max-height: calc(100vh - 160px); */
+        max-width: 100vw;
+        max-height: 100vh;
+      }
+      .canvasDetected {
+        /*style of the canvas when user face is detected*/
+        position: absolute;
+        z-index: -1;
+      }
+      .canvasNotDetected {
+        /*style of the canvas when user face is lost */
+        z-index: 11;
+        position: absolute;
+        top: auto !important;
+        bottom: 0px !important;
+        left: 0px !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+      }
+      #info {
+        background-color: #ffffff80;
+        overflow: auto;
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        bottom: 0;
+        right: 0;
+      }
+      .videoDiv {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="artpaintingContainer">
+      <canvas id="jeeFaceFilterCanvas" class="artPainting"></canvas>
+    </div>
+    <div class="videoDiv">
+      <video id="videoElement" autoplay="true"></video>
+    </div>
+    <!-- <p id="info"></p> -->
+    <script>
+      document.addEventListener(
+        'DOMContentLoaded',
+        function () {
+          if (!window.sendConsolelog) {
+            window.sendConsolelog = function (log) {
+              console.log(log);
+            };
+          }
+          main(window.maskImage ? window.maskImage : './images/demo1.jpeg');
+        },
+        false
+      );
+    </script>
+  </body>
+</html>
