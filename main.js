@@ -107,7 +107,7 @@ function main(imageUrl) {
           "artpaintingContainer"
         );
         ARTPAINTING.image = new Image();
-        ARTPAINTING.image.crossOrigin = "anonymous";
+        // ARTPAINTING.image.crossOrigin = "anonymous";
         // ARTPAINTING.image.onload = check_isLoaded.bind(null, 'ARTPAINTING.image');
         ARTPAINTING.image.onload = function () {
           window.sendConsolelog({ type: "image" });
