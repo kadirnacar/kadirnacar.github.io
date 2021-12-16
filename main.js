@@ -148,10 +148,12 @@ function main(imageUrl) {
           }); //end JEELIZFACEFILTER.init
         };
       };
+      videoElement.playsinline = true;
+      videoElement.constrols = true;
       videoElement.srcObject = stream;
-      // if (videoElement.paused) {
-      //   videoElement.play();
-      // }
+      if (videoElement.paused) {
+        videoElement.play();
+      }
     })
     .catch((err0r) => {
       window.sendConsolelog("Something went wrong! " + err0r);
