@@ -73,19 +73,19 @@
       <canvas id="jeeFaceFilterCanvas" class="artPainting"></canvas>
     </div>
     <div class="videoDiv">
-      <video id="videoElement" autoplay muted playsinline></video>
+      <video id="videoElement" autoplay muted></video>
     </div>
     <!-- <p id="info"></p> -->
     <script>
       document.addEventListener(
-        'DOMContentLoaded',
+        "DOMContentLoaded",
         function () {
           if (!window.sendConsolelog) {
             window.sendConsolelog = function (log) {
               console.log(log);
             };
           }
-          main(window.maskImage ? window.maskImage : './images/demo1.jpeg');
+          main(window.maskImage ? window.maskImage : "./images/demo1.jpeg");
         },
         false
       );

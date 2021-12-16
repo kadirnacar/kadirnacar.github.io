@@ -150,7 +150,6 @@ function main(imageUrl) {
         ARTPAINTING.image.src = imageUrl;
       };
       videoElement.playsinline = true;
-      videoElement.constrols = true;
       videoElement.srcObject = stream;
       if (videoElement.paused) {
         videoElement.play();
