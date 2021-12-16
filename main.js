@@ -106,7 +106,6 @@ function main(imageUrl) {
         );
         ARTPAINTING.image = new Image();
         ARTPAINTING.image.crossOrigin = "Anonymous";
-        ARTPAINTING.image.src = imageUrl;
         // ARTPAINTING.image.onload = check_isLoaded.bind(null, 'ARTPAINTING.image');
         ARTPAINTING.image.onload = function () {
           window.sendConsolelog({ type: "image" });
@@ -147,6 +146,8 @@ function main(imageUrl) {
             callbackTrack: callbackTrack,
           }); //end JEELIZFACEFILTER.init
         };
+
+        ARTPAINTING.image.src = imageUrl;
       };
       videoElement.playsinline = true;
       videoElement.constrols = true;
