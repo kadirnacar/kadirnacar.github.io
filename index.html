@@ -78,14 +78,14 @@
     <!-- <p id="info"></p> -->
     <script>
       document.addEventListener(
-        "DOMContentLoaded",
+        'DOMContentLoaded',
         function () {
           if (!window.sendConsolelog) {
             window.sendConsolelog = function (log) {
               console.log(log);
             };
           }
-          main(window.maskImage ? window.maskImage : "./images/demo1.jpeg");
+          main(window.maskImage ? window.maskImage : './images/demo1.jpeg');
         },
         false
       );
