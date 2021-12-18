@@ -169,7 +169,7 @@ function start() {
   build_shps();
 
   // set the canvas to the artpainting size:
-  update_artPainting(SETTINGS.detectState);
+  update_artPainting(window.detectState);
 } //end start()
 
 function update_artPainting(detectState) {
