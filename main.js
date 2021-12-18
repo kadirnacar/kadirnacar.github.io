@@ -168,7 +168,7 @@ function start() {
   create_textures();
   build_shps();
   window.sendConsolelog(
-    'window.detectState: ' + window.detectState ? JSON.stringify(window.detectState) : ''
+    'window.detectState: ' + (window.detectState ? JSON.stringify(window.detectState) : '')
   );
   // set the canvas to the artpainting size:
   update_artPainting(window.detectState);
