@@ -847,12 +847,12 @@ function callbackTrack(detectState) {
         }
       }
 
-      // if (!first) {
-      //   first = true;
-      //   build_artPaintingMask(ARTPAINTING.detectedState, reset_toVideo);
-      // } else {
-      draw_search(detectState);
-      // }
+      if (!first) {
+        first = true;
+        build_artPaintingMask(ARTPAINTING.detectedState, reset_toVideo);
+      } else {
+        // draw_search(detectState);
+      }
       break;
 
     case STATES.ARTPAINTINGFACEDETECTPROVIDED:
