@@ -818,7 +818,7 @@ function draw_render(detectState) {
     GL.drawElements(GL.TRIANGLES, 3, GL.UNSIGNED_SHORT, 0);
   }
 } //end draw_render()
-
+var first = false;
 function callbackTrack(detectState) {
   switch (STATE) {
     case STATES.DETECTARTPAINTINGFACE:
@@ -842,8 +842,12 @@ function callbackTrack(detectState) {
         }
       }
 
-      build_artPaintingMask(ARTPAINTING.detectedState, reset_toVideo);
-      // draw_search(detectState);
+      if (!first) {
+        first = true;
+        build_artPaintingMask(ARTPAINTING.detectedState, reset_toVideo);
+      } else {
+        draw_search(detectState);
+      }
       break;
 
     case STATES.ARTPAINTINGFACEDETECTPROVIDED:
