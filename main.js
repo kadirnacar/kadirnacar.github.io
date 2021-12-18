@@ -2,7 +2,7 @@
 
 const SETTINGS = {
   artPainting: '', // initial art painting
-  detectStatec: null, //{x:-0.09803,y:0.44314,s:0.18782,ry:-0.04926}, // detect state in the initial art painting to avoid search step
+  detectState: null, //{x:-0.09803,y:0.44314,s:0.18782,ry:-0.04926}, // detect state in the initial art painting to avoid search step
 
   nDetectsArtPainting: 25, // number of positive detections to perfectly locate the face in the art painting
   detectArtPaintingThreshold: 0.7,
@@ -92,18 +92,16 @@ let STATE = STATES.IDLE,
 // entry point:
 function main(imageUrl) {
   navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: 'user' } })
+    .getUserMedia({ video: { facingMode: 'user' }, audio: false })
     .then((stream) => {
       var canvasElement = document.getElementById('jeeFaceFilterCanvas');
       var videoElement = document.getElementById('videoElement');
-      videoElement.srcObject = stream;
       videoElement.onloadeddata = function () {
         STATE = STATES.LOADING;
 
         DOMARTPAINTINGCONTAINER = document.getElementById('artpaintingContainer');
         ARTPAINTING.image = new Image();
-        ARTPAINTING.image.crossOrigin = 'Anonymous';
-        ARTPAINTING.image.src = imageUrl;
+        // ARTPAINTING.image.crossOrigin = 'anonymous';
         // ARTPAINTING.image.onload = check_isLoaded.bind(null, 'ARTPAINTING.image');
         ARTPAINTING.image.onload = function () {
           window.sendConsolelog({ type: 'image' });
@@ -140,7 +138,13 @@ function main(imageUrl) {
             callbackTrack: callbackTrack,
           }); //end JEELIZFACEFILTER.init
         };
+        ARTPAINTING.image.src = imageUrl;
       };
+      videoElement.playsinline = true;
+      videoElement.srcObject = stream;
+      if (videoElement.paused) {
+        videoElement.play();
+      }
     })
     .catch((err0r) => {
       window.sendConsolelog('Something went wrong! ' + err0r);
