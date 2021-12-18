@@ -109,7 +109,7 @@ function main(imageUrl) {
           const urlSearchParams = new URLSearchParams(window.location.search);
           const params = Object.fromEntries(urlSearchParams.entries());
           const nnPath = params.nn || 'NN_DEFAULT.json';
-          console.log(nnPath)
+          window.sendConsolelog('NNPath = ' + nnPath)
           JEELIZFACEFILTER.init({
             canvas: canvasElement,
             videoSettings: {
