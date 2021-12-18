@@ -109,7 +109,7 @@ function main(imageUrl) {
           const urlSearchParams = new URLSearchParams(window.location.search);
           const params = Object.fromEntries(urlSearchParams.entries());
           const nnPath = params.nn || 'NN_DEFAULT.json';
-          window.sendConsolelog('NNPath = ' + nnPath)
+          window.sendConsolelog('NNPath = ' + nnPath);
           JEELIZFACEFILTER.init({
             canvas: canvasElement,
             videoSettings: {
@@ -167,7 +167,9 @@ function start() {
 
   create_textures();
   build_shps();
-
+  window.sendConsolelog(
+    'window.detectState: ' + window.detectState ? JSON.stringify(window.detectState) : ''
+  );
   // set the canvas to the artpainting size:
   update_artPainting(window.detectState);
 } //end start()
