@@ -106,13 +106,16 @@ function main(imageUrl) {
         ARTPAINTING.image.onload = function () {
           window.sendConsolelog({ type: 'image' });
           check_isLoaded('ARTPAINTING.image');
-
+          const urlSearchParams = new URLSearchParams(window.location.search);
+          const params = Object.fromEntries(urlSearchParams.entries());
+          const nnPath = params.nn || 'NN_DEFAULT.json';
+          console.log(nnPath)
           JEELIZFACEFILTER.init({
             canvas: canvasElement,
             videoSettings: {
               videoElement: videoElement,
             },
-            NNCPath: './neuralNets/', // root of NN_DEFAULT.json file
+            NNCPath: './neuralNets/' + nnPath, // root of NN_DEFAULT.json file
             callbackReady: function (errCode, spec) {
               if (errCode) {
                 window.sendConsolelog({
