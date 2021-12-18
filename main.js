@@ -2,7 +2,7 @@
 
 const SETTINGS = {
   artPainting: '', // initial art painting
-  detectState: null, //{x:-0.09803,y:0.44314,s:0.18782,ry:-0.04926}, // detect state in the initial art painting to avoid search step
+  detectStatec: null, //{x:-0.09803,y:0.44314,s:0.18782,ry:-0.04926}, // detect state in the initial art painting to avoid search step
 
   nDetectsArtPainting: 25, // number of positive detections to perfectly locate the face in the art painting
   detectArtPaintingThreshold: 0.7,
@@ -15,7 +15,7 @@ const SETTINGS = {
   artPaintingHeadJawY: 0.5, // lower jaw start when Y<this value. Max: 1
 
   // user crop face and detection settings:
-  videoDetectSizePx: 2048,
+  videoDetectSizePx: 1024,
   faceRenderSizePx: 256,
   zoomFactor: 1.03, // 1-> exactly the same zoom than for the art painting
   detectionThreshold: 0.8, // sensibility, between 0 and 1. Less -> more sensitive
@@ -91,20 +91,19 @@ let STATE = STATES.IDLE,
 
 // entry point:
 function main(imageUrl) {
-  window.sendConsolelog({ type: 'function', imageUrl });
   navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: 'user' }, audio: false })
+    .getUserMedia({ video: { facingMode: 'user' } })
     .then((stream) => {
       var canvasElement = document.getElementById('jeeFaceFilterCanvas');
       var videoElement = document.getElementById('videoElement');
+      videoElement.srcObject = stream;
       videoElement.onloadeddata = function () {
-        window.sendConsolelog('loaded camera');
-
         STATE = STATES.LOADING;
 
         DOMARTPAINTINGCONTAINER = document.getElementById('artpaintingContainer');
         ARTPAINTING.image = new Image();
-        // ARTPAINTING.image.crossOrigin = "anonymous";
+        ARTPAINTING.image.crossOrigin = 'Anonymous';
+        ARTPAINTING.image.src = imageUrl;
         // ARTPAINTING.image.onload = check_isLoaded.bind(null, 'ARTPAINTING.image');
         ARTPAINTING.image.onload = function () {
           window.sendConsolelog({ type: 'image' });
@@ -141,14 +140,7 @@ function main(imageUrl) {
             callbackTrack: callbackTrack,
           }); //end JEELIZFACEFILTER.init
         };
-
-        ARTPAINTING.image.src = imageUrl;
       };
-      videoElement.playsinline = true;
-      videoElement.srcObject = stream;
-      if (videoElement.paused) {
-        videoElement.play();
-      }
     })
     .catch((err0r) => {
       window.sendConsolelog('Something went wrong! ' + err0r);
@@ -437,9 +429,10 @@ function build_shps() {
         vec2 isInside = step(uxysw.xy-uxysw.zw, pos);\n\
         isInside *= step(pos, uxysw.xy+uxysw.zw);\n\
         vec2 blendCenterFactor = abs(pos-uxysw.xy)/uxysw.zw;\n\
-        float alpha = isInside.x*isInside.y*pow(max(blendCenterFactor.x, blendCenterFactor.y), 3.);\n\
-        vec3 color = mix(colorVideo, vec3(0.,0.6,1.), alpha);\n\
-        gl_FragColor = vec4(color,1.);\n\
+        //float alpha = isInside.x*isInside.y*pow(max(blendCenterFactor.x, blendCenterFactor.y), 3.);\n\
+        //vec3 color = mix(colorVideo, vec3(0.,0.6,1.), alpha);\n\
+        //gl_FragColor = vec4(color,1.);\n\
+        gl_FragColor = vec4(colorVideo,1.);\n\
       }',
     'SEARCH FACE'
   );
@@ -844,8 +837,9 @@ function callbackTrack(detectState) {
           return;
         }
       }
-      // build_artPaintingMask(ARTPAINTING.detectedState, reset_toVideo);
-      draw_search(detectState);
+
+      build_artPaintingMask(ARTPAINTING.detectedState, reset_toVideo);
+      // draw_search(detectState);
       break;
 
     case STATES.ARTPAINTINGFACEDETECTPROVIDED:
@@ -862,14 +856,19 @@ function callbackTrack(detectState) {
         ISUSERFACEDETECTED = false;
         FFSPECS.canvasElement.classList.remove('canvasDetected');
         FFSPECS.canvasElement.classList.add('canvasNotDetected');
+        var loaderElement = document.getElementById('loader');
+        loaderElement.classList.add('loader');
       } else if (
         !ISUSERFACEDETECTED &&
         detectState.detected > SETTINGS.detectionThreshold + SETTINGS.detectionHysteresis
       ) {
         // FACE DETECTED
         ISUSERFACEDETECTED = true;
+        FFSPECS.canvasElement.classList.remove('hideCanvas');
         FFSPECS.canvasElement.classList.remove('canvasNotDetected');
         FFSPECS.canvasElement.classList.add('canvasDetected');
+        var loaderElement = document.getElementById('loader');
+        loaderElement.classList.remove('loader');
       }
 
       if (ISUSERFACEDETECTED) {
