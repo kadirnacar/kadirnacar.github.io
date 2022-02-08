@@ -1,1 +1,0 @@
-# kadirnacar.github.io
